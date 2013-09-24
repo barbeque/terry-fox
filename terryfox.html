@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Terry Fox Run Progress Meter</title>
+		<style>
+			html, body, #map-canvas {
+				margin: 0;
+				padding: 0;
+				height: 100%;
+				z-index: 60;
+			}
+			.palette {
+				position: absolute;
+				display: inline-block;
+				width: 256px;
+				height: 512px;
+				float: right;
+				top: 30px;
+				right: 10px;
+				margin: 10px;
+				border: 2px solid black;
+				z-index: 100;
+				background: white;
+				padding: 10px;
+				border-radius: 10px;
+			}
+			.form-pair {
+				width: 100%;
+				clear: both;
+			}
+			.form-pair label {
+				float: left;
+			}
+			.form-pair input {
+				float: right;
+			}
+			.showRoute {
+				position: absolute;
+				bottom: 10px;
+				right: 10px;
+				font-size: 36px;
+				left: 10px;
+			}
+		</style>
+		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+		<script>
+			var map;
+			function init() {
+				var mapOptions = {
+					zoom: 8,
+					center: new google.maps.LatLng(-34.397, 150.644),
+					mapTypeId: google.maps.MapTypeId.ROADMAP
+				};
+				map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+			}
+
+			google.maps.event.addDomListener(window, 'load', init);
+		</script>
+	</head>
+	<body>
+		<div class="palette">
+			<h1>Terry Fox Run Progress</h1>
+			<hr/>
+			<div class="form-pair">
+				<label for="teamA">Team A</label>
+				<input id="teamA"></input>
+			</div>
+			<div class="form-pair">
+				<label for="teamB">Team B</label>
+				<input id="teamB"></input>
+			</div>
+			<div class="form-pair">
+				<label for="teamC">Team C</label>
+				<input id="teamC"></input>
+			</div>
+			<div class="form-pair">
+				<label for="teamD">Team D</label>
+				<input id="teamD"></input>
+			</div>
+			<button class="showRoute">Show</button>
+		</div>
+		<div id="map-canvas"></div>
+	</body>
+</html>
