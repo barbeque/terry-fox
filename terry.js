@@ -41,22 +41,19 @@ function plotTerryFoxRun() {
 	'Terrace Bay, ON',
 	'Thunder Bay, ON'];
 
-	var points = resolvePoints(locations);
-	defineRoute(points);
+	resolvePoints(locations);
 }
 
 function resolvePoints(locations) {
-	var points = [];
-
 	var promises = [];
 
 	for(l in locations) {
 		promises.push(doGeocode(l));
 	}
-
 	$.when.apply($, promises).then(function(pp) {
 		// All done
-		alert("All done. Points array size = " + points.length);
+		alert("All done. Points array size = " + pp.length);
+		defineRoute(pp);
 	});
 }
 
