@@ -41,18 +41,30 @@ function plotTerryFoxRun() {
 	'Terrace Bay, ON',
 	'Thunder Bay, ON'];
 
+	var points = resolvePoints(locations);
+	defineRoute(points);
+}
+
+function resolvePoints(locations) {
 	var points = [];
 	var gc = new google.maps.Geocoder();
+
+	// Need to figure out how to do a promise or something here..
+	// TODO
+	var geocoded = 0;
 
 	for(loc in locations) {
 		gc.geocode( {'address': loc }, function(results, status) {
 			if(status == google.maps.GeocoderStatus.OK) {
 				var latlong = results[0].geometry.location;
 				points.push(latlong);
+				++geocoded;
 			}
 		});
 	}
+}
 
+function defineRoute(points) {
 	var rendererOptions = { map: map };
 	var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
 
