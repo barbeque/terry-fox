@@ -47,21 +47,31 @@ function plotTerryFoxRun() {
 
 function resolvePoints(locations) {
 	var points = [];
-	var gc = new google.maps.Geocoder();
 
-	// Need to figure out how to do a promise or something here..
-	// TODO
-	var geocoded = 0;
-
-	for(loc in locations) {
-		gc.geocode( {'address': loc }, function(results, status) {
-			if(status == google.maps.GeocoderStatus.OK) {
-				var latlong = results[0].geometry.location;
-				points.push(latlong);
-				++geocoded;
-			}
+	for(l in locations) {
+		doGeocode(l).done(function(latlong) {
+			points.push(latlong);
 		});
 	}
+
+	$.when.apply($, doGeocode).done(function() {
+		// All done
+		alert("All done. Points array size = " + points.length);
+	});
+}
+
+function doGeocode(location) {
+	var gc = new google.maps.Geocoder();
+	var def = $.Deferred();
+
+	gc.geocode({'address': location}, function(results, status) {
+		if(status == google.maps.GeocoderStatus.OK) {
+			var latlong = results[0].geometry.location;
+			def.resolve(latlong);
+		}
+	});
+
+	return def.promise();
 }
 
 function defineRoute(points) {
