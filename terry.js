@@ -48,13 +48,13 @@ function plotTerryFoxRun() {
 function resolvePoints(locations) {
 	var points = [];
 
+	var promises = [];
+
 	for(l in locations) {
-		doGeocode(l).done(function(latlong) {
-			points.push(latlong);
-		});
+		promises.push(doGeocode(l));
 	}
 
-	$.when.apply($, doGeocode).done(function() {
+	$.when.apply($, promises).then(function(pp) {
 		// All done
 		alert("All done. Points array size = " + points.length);
 	});
