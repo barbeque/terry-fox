@@ -22,6 +22,24 @@
 				z-index: 100;
 				background: white;
 				padding: 10px;
+				border-radius: 10px;
+			}
+			.form-pair {
+				width: 100%;
+				clear: both;
+			}
+			.form-pair label {
+				float: left;
+			}
+			.form-pair input {
+				float: right;
+			}
+			.showRoute {
+				position: absolute;
+				bottom: 10px;
+				right: 10px;
+				font-size: 36px;
+				left: 10px;
 			}
 		</style>
 		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
@@ -43,6 +61,23 @@
 		<div class="palette">
 			<h1>Terry Fox Run Progress</h1>
 			<hr/>
+			<div class="form-pair">
+				<label for="teamA">Team A</label>
+				<input id="teamA"></input>
+			</div>
+			<div class="form-pair">
+				<label for="teamB">Team B</label>
+				<input id="teamB"></input>
+			</div>
+			<div class="form-pair">
+				<label for="teamC">Team C</label>
+				<input id="teamC"></input>
+			</div>
+			<div class="form-pair">
+				<label for="teamD">Team D</label>
+				<input id="teamD"></input>
+			</div>
+			<button class="showRoute">Show</button>
 		</div>
 		<div id="map-canvas"></div>
 	</body>
