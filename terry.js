@@ -2,7 +2,7 @@ var map;
 function init() {
 	var mapOptions = {
 		zoom: 8,
-		center: new google.maps.LatLng(-34.397, 150.644),
+		center: new google.maps.LatLng(51.0453246, -114.05810120000001),
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
 	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
@@ -57,7 +57,6 @@ function resolvePoints(locations) {
 		var args = Array.prototype.slice.call(arguments, 0);
 		var pp = args.sort();
 		// All done
-		alert("All done. Points array size = " + pp.length);
 		defineRoute(pp);
 	});
 }
@@ -106,6 +105,9 @@ function defineRoute(points) {
 	function(result, status) {
 		if(status == google.maps.DirectionsStatus.OK) {
 			directionsDisplay.setDirections(result);
+
+			// Wait for it... then set the map center
+			//map.setCenter(new google.maps.LatLng(53.0779, -67.98867));
 		}
 	});
 }
