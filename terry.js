@@ -8,8 +8,15 @@ function init() {
 	};
 	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
+	var queryString = document.location.hash.substring(1);
+	var distances = queryString.split(';');
+	// todo: plug that shit in	
+
 	// go for it
 	plotTerryFoxRun();
+}
+
+function initializeForm(values) {
 }
 
 var successes = 0;
@@ -94,10 +101,10 @@ function defineRoute(points) {
 	director.route({
 		avoidHighways: false,
 		avoidTolls: false,
-		destination: points[points.length - 1],
+		origin: points[points.length - 1],//points[0],
+		destination: points[0],//points[points.length - 1],
 		durationInTraffic: false,
 		optimizeWaypoints: false,
-		origin: points[0],
 		provideRouteAlternatives: false,
 		travelMode: google.maps.TravelMode.DRIVING,
 		unitSystem: google.maps.UnitSystem.METRIC,
