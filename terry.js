@@ -11,6 +11,8 @@ function init() {
 	plotTerryFoxRun();
 }
 
+var successes = 0;
+
 function plotTerryFoxRun() {
 	// TODO: store latlongs
 	locations = [
@@ -48,9 +50,12 @@ function resolvePoints(locations) {
 	var promises = [];
 
 	for(l in locations) {
-		promises.push(doGeocode(l));
+		promises.push(doGeocode(locations[l]));
 	}
-	$.when.apply($, promises).then(function(pp) {
+	$.when.apply($, promises).then(function() {
+		// Convert arguments into an array
+		var args = Array.prototype.slice.call(arguments, 0);
+		var pp = args.sort();
 		// All done
 		alert("All done. Points array size = " + pp.length);
 		defineRoute(pp);
@@ -65,6 +70,10 @@ function doGeocode(location) {
 		if(status == google.maps.GeocoderStatus.OK) {
 			var latlong = results[0].geometry.location;
 			def.resolve(latlong);
+			++successes;
+		}
+		else if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+			alert("Over query limit.");
 		}
 	});
 
