@@ -50,7 +50,7 @@ function resolvePoints(locations) {
 	var promises = [];
 
 	for(l in locations) {
-		promises.push(doGeocode(locations[l]));
+		promises.push(doGeocode(locations[l], l));
 	}
 	$.when.apply($, promises).then(function() {
 		// Convert arguments into an array
@@ -62,20 +62,26 @@ function resolvePoints(locations) {
 	});
 }
 
-function doGeocode(location) {
+function doGeocode(location, index) {
 	var gc = new google.maps.Geocoder();
 	var def = $.Deferred();
 
-	gc.geocode({'address': location}, function(results, status) {
-		if(status == google.maps.GeocoderStatus.OK) {
-			var latlong = results[0].geometry.location;
-			def.resolve(latlong);
-			++successes;
-		}
-		else if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
-			alert("Over query limit.");
-		}
-	});
+	var stall = 750;
+
+	// Do one request every 200ms so we're not in trouble with The Google.
+	// This is a terrible HACK
+	setTimeout(function() {
+		gc.geocode({'address': location}, function(results, status) {
+			if(status == google.maps.GeocoderStatus.OK) {
+				var latlong = results[0].geometry.location;
+				def.resolve(latlong);
+				++successes;
+			}
+			else if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+				alert("Over query limit (t = " + index * stall + ").");
+			}
+		});
+	}, index * stall);
 
 	return def.promise();
 }
