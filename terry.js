@@ -1,5 +1,6 @@
 var map;
 function init() {
+	$("button").attr('disabled', 'disabled');
 	var mapOptions = {
 		zoom: 8,
 		center: new google.maps.LatLng(51.0453246, -114.05810120000001),
@@ -10,9 +11,10 @@ function init() {
 
 	var queryString = document.location.hash.substring(1);
 	var distances = queryString.split(';');
-	// todo: plug that shit in	
-
+	
 	initializeForm(distances);
+	// TODO: if they actually provided distances, remember to run the button
+	// method after the route plot is done.
 
 	// go for it
 	plotTerryFoxRun();
