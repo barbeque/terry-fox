@@ -88,6 +88,9 @@ function initializeForm(values) {
 		var f = $('<div class="form-pair"><label for="form' + i + '">Team ' + (i + 1) + '</label><input name="form' + i + '" value="' + value + '"></input></div>');
 
 		$(".form-entries").append(f);
+
+		// Isn't there an easier way to do this in jQuery? I could swear there was.
+		$("label[for=form" + i + "]").css('background-color', palette[i]);
 	}
 }
 
