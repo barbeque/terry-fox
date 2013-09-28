@@ -72,45 +72,6 @@ function routeToPolyLine(route) {
 
 var successes = 0;
 
-function resolvePoints(locations) {
-	var promises = [];
-
-	for(l in locations) {
-		promises.push(doGeocode(locations[l], l));
-	}
-	$.when.apply($, promises).then(function() {
-		// Convert arguments into an array
-		var args = Array.prototype.slice.call(arguments, 0);
-		var pp = args.sort();
-		// All done
-		defineRoute(pp);
-	});
-}
-
-function doGeocode(location, index) {
-	var gc = new google.maps.Geocoder();
-	var def = $.Deferred();
-
-	var stall = 750;
-
-	// Do one request every 200ms so we're not in trouble with The Google.
-	// This is a terrible HACK
-	setTimeout(function() {
-		gc.geocode({'address': location}, function(results, status) {
-			if(status == google.maps.GeocoderStatus.OK) {
-				var latlong = results[0].geometry.location;
-				def.resolve(latlong);
-				++successes;
-			}
-			else if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
-				alert("Over query limit (t = " + index * stall + ").");
-			}
-		});
-	}, index * stall);
-
-	return def.promise();
-}
-
 function defineRoute(points) {
 	var rendererOptions = { map: map };
 	var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
@@ -126,7 +87,7 @@ function defineRoute(points) {
 		provideRouteAlternatives: false,
 		travelMode: google.maps.TravelMode.DRIVING,
 		unitSystem: google.maps.UnitSystem.METRIC,
-		waypoints: degradeList(locations, 8) // google sucks
+		waypoints: degradeList(points, 8) // google sucks
 	},
 	function(result, status) {
 		if(status == google.maps.DirectionsStatus.OK) {
@@ -182,7 +143,7 @@ function makePointer(polyline, distance, teamName) {
 
 function plotTerryFoxRun() {
 	// TODO: store latlongs
-	locations = [
+	/*locations = [
 	'St Johns Newfoundland',
 	'Gander Newfoundland',
 	'South Brook Junction Newfoundland',
@@ -208,7 +169,37 @@ function plotTerryFoxRun() {
 	'Sault Ste. Marie, ON',
 	'Wawa, ON',
 	'Terrace Bay, ON',
-	'Thunder Bay, ON'];
+	'Thunder Bay, ON'];*/
 
-	resolvePoints(locations);
+	//resolvePoints(locations);
+
+	var pp = [
+		new google.maps.LatLng(43.25002080000001, -79.86609140000002),
+		new google.maps.LatLng(43.653226, -79.38318429999998),
+		new google.maps.LatLng(43.7729244, -79.25756469999999),
+		new google.maps.LatLng(43.83841169999999, -79.08675790000001),
+		new google.maps.LatLng(44.6652059, -63.5677427),
+		new google.maps.LatLng(44.919643, -79.37418339999999),
+		new google.maps.LatLng(44.9278509, -62.544239000000005),
+		new google.maps.LatLng(45.4215296, -75.69719309999999),
+		new google.maps.LatLng(45.6071264, -74.60418900000002),
+		new google.maps.LatLng(46.0878165, -64.77823130000002),
+		new google.maps.LatLng(46.23824, -63.1310704),
+		new google.maps.LatLng(46.471094, -67.5806829),
+		new google.maps.LatLng(46.48999999999999, -81.00999999999999),
+		new google.maps.LatLng(46.52185799999999, -84.34608960000003),
+		new google.maps.LatLng(46.7458117, -67.69777210000001),
+		new google.maps.LatLng(46.8032826, -71.242796),
+		new google.maps.LatLng(47.5605413, -52.71283149999999),
+		new google.maps.LatLng(47.5721149, -59.13642900000002),
+		new google.maps.LatLng(47.6670443, -68.9740324),
+		new google.maps.LatLng(47.683333, -84.5),
+		new google.maps.LatLng(47.992392, -84.771007),
+		new google.maps.LatLng(48.3808951, -89.24768230000001),
+		new google.maps.LatLng(48.4876939, -68.4521517),
+		new google.maps.LatLng(48.784141, -87.09624500000001),
+		new google.maps.LatLng(48.954408, -54.6103488),
+		new google.maps.LatLng(49.3644591, -56.09523760000002) 
+	];
+	defineRoute(pp);
 }
