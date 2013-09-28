@@ -1,6 +1,8 @@
 var map;
 var activeMarkers = [];
 var infoWindow = {};
+var MAX_FIELDS = 16;
+var terryFoxRoute = {};
 
 function init() {
 	$("button").attr('disabled'	, 'disabled');
@@ -24,6 +26,31 @@ function init() {
 
 	// go for it
 	plotTerryFoxRun();
+
+	$("button").removeAttr('disabled');
+}
+
+function addMarkersFromMenu() {
+	if(!terryFoxRoute) {
+		return; // Not loaded yet...
+	}
+
+	// First, clear.
+	clearMarkers();
+	// Then, iterate all of the inputs and make pointers.
+	for(var i = 0; i < MAX_FIELDS; ++i) {
+		var text = $("input[name=form" + i + "]").val();
+		if(text.length > 0) {
+			if(isNaN(text)) {
+				// I dunno, is there some better way?
+				makePointer(terryFoxRoute, 0, 'Team ' + (i + 1) + " - INVALID DISTANCE PROVIDED");
+			}
+			else {
+				var distanceInKm = parseInt(text);
+				makePointer(terryFoxRoute, distanceInKm, 'Team ' + (i + 1));
+			}
+		}
+	}
 }
 
 function clearMarkers() {
@@ -34,7 +61,7 @@ function clearMarkers() {
 }
 
 function initializeForm(values) {
-	var fields = 16;
+	var fields = MAX_FIELDS;
 	for(var i = 0; i < fields; ++i) {
 		var value = ''
 		if(values && values[i]) {
@@ -99,6 +126,7 @@ function defineRoute(points) {
 			var route = result.routes[0];
 			var polylineResult = routeToPolyLine(route);
 			var polyline = polylineResult.polyline;
+			terryFoxRoute = polyline;
 
 			map.fitBounds(polylineResult.bounds);
 			polyline.setMap(map);
