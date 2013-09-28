@@ -1,5 +1,6 @@
 var map;
 var activeMarkers = [];
+var infoWindow = {};
 
 function init() {
 	$("button").attr('disabled'	, 'disabled');
@@ -13,6 +14,9 @@ function init() {
 
 	var queryString = document.location.hash.substring(1);
 	var distances = queryString.split(';');
+	infoWindow = new google.maps.InfoWindow({
+		size: new google.maps.Size(150, 150)
+	});
 	
 	initializeForm(distances);
 	// TODO: if they actually provided distances, remember to run the button
@@ -159,13 +163,21 @@ function clone(o) {
 }
 
 function makePointer(polyline, distance, teamName) {
+	var content = teamName + " (" + distance + "km)";
 	var ll = polyline.GetPointAtDistance(distance * 1000);
 	var marker = new google.maps.Marker({
 		position: ll,
 		map: map,
-		title: teamName + "(" + distance + "km)"
+		title: content
 	});
-	activeMarkers.push(makePointer);
+	activeMarkers.push(marker);
+
+	google.maps.event.addListener(marker, 'click', function() {
+		infoWindow.setContent(content);
+		infoWindow.open(map, marker);
+	});
+
+	return marker;
 }
 
 function plotTerryFoxRun() {
