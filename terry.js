@@ -4,6 +4,14 @@ var infoWindow = {};
 var MAX_FIELDS = 16;
 var terryFoxRoute = {};
 
+// TODO Use this palette when you figure out how to use custom icons.
+var rainbowPalette = [
+	'#5260e0', '#8A0447', '#F92664', '#EBCF47',	'#47E0EB',
+	'#346CD9', '#2DE134', '#E87626', '#529EE0', '#2BEEB9',
+	'#00FF79', '#00FF00', '#B71100', '#0400C0','#22CC14',
+	'#9DDB00', '#FF9933'
+];
+
 function init() {
 	$("button").attr('disabled'	, 'disabled');
 	var mapOptions = {
@@ -43,11 +51,21 @@ function addMarkersFromMenu() {
 		if(text.length > 0) {
 			if(isNaN(text)) {
 				// I dunno, is there some better way?
-				makePointer(terryFoxRoute, 0, 'Team ' + (i + 1) + " - INVALID DISTANCE PROVIDED");
+				makePointer(terryFoxRoute, 0, 'Team ' + (i + 1) + " - INVALID DISTANCE PROVIDED", '#ff0000');
 			}
 			else {
 				var distanceInKm = parseInt(text);
-				makePointer(terryFoxRoute, distanceInKm, 'Team ' + (i + 1));
+
+				var c;
+				if(i < 0 || i > palette.length) {
+					// No idea how this'd happen but let's do it up right
+					c = '#ff0000';
+				}
+				else {
+					c = palette[i];
+				}
+
+				makePointer(terryFoxRoute, distanceInKm, 'Team ' + (i + 1), c);
 			}
 		}
 	}
@@ -156,7 +174,7 @@ function clone(o) {
 	return JSON.parse(JSON.stringify(o));
 }
 
-function makePointer(polyline, distance, teamName) {
+function makePointer(polyline, distance, teamName, colour) {
 	var content = teamName + " (" + distance + "km)";
 	var ll = polyline.GetPointAtDistance(distance * 1000);
 	var marker = new google.maps.Marker({
