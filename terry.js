@@ -5,7 +5,7 @@ var MAX_FIELDS = 16;
 var terryFoxRoute = {};
 
 // TODO Use this palette when you figure out how to use custom icons.
-var rainbowPalette = [
+var palette = [
 	'#5260e0', '#8A0447', '#F92664', '#EBCF47',	'#47E0EB',
 	'#346CD9', '#2DE134', '#E87626', '#529EE0', '#2BEEB9',
 	'#00FF79', '#00FF00', '#B71100', '#0400C0','#22CC14',
@@ -148,10 +148,6 @@ function defineRoute(points) {
 
 			map.fitBounds(polylineResult.bounds);
 			polyline.setMap(map);
-
-			makePointer(polyline, 10, 'Ten');
-			makePointer(polyline, 100, 'One Hundred');
-			makePointer(polyline, 1000, 'One Thousand');
 		}
 	});
 }
