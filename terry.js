@@ -1,6 +1,8 @@
 var map;
+var activeMarkers = [];
+
 function init() {
-	$("button").attr('disabled', 'disabled');
+	$("button").attr('disabled'	, 'disabled');
 	var mapOptions = {
 		zoom: 8,
 		center: new google.maps.LatLng(51.0453246, -114.05810120000001),
@@ -33,40 +35,38 @@ function initializeForm(values) {
 	}
 }
 
-var successes = 0;
+function routeToPolyLine(route) {
+	var legs = route.legs;
+	var steps = legs[0].steps;
+	var points = [];
+	var bounds = new google.maps.LatLngBounds;
 
-function plotTerryFoxRun() {
-	// TODO: store latlongs
-	locations = [
-	'St Johns Newfoundland',
-	'Gander Newfoundland',
-	'South Brook Junction Newfoundland',
-	'Port-Aux-Basques Newfoundland',
-	'Sheet Harbour, Nova Scotia',
-	'Dartmouth, Nova Scotia',
-	'Charlottetown, PEI',
-	'Moncton, NB',
-	'Bristol, NB',
-	'Perth-Andover, NB',
-	'Highway 185, QC',
-	'Highway 20, QC',
-	'Quebec City, QC',
-	'Hawkesbury, ON',
-	'Ottawa, ON',
-	'Millwood, ON',
-	'Pickering, ON',
-	'Scarborough Civic Centre, ON',
-	'Toronto, ON',
-	'Hamilton, ON',
-	'Gravenhurst, ON',
-	'Sudbury, ON',
-	'Sault Ste. Marie, ON',
-	'Wawa, ON',
-	'Terrace Bay, ON',
-	'Thunder Bay, ON'];
+	for(var i = 0; i < steps.length; ++i) {
+		var point = steps[i].start_location;
+		bounds = bounds.extend(point);
+		points.push(point);
+		// Clean it up real nice.
+		if(i == steps.length - 1) {
+			point = steps[i].end_location;
+			bounds = bounds.extend(point);
+			points.push(point);
+		}
+	}
 
-	resolvePoints(locations);
+	var polyLine = new google.maps.Polyline({
+		path: points,
+		strokeColor: '#ff0000',
+		strokeOpacity: 1.0,
+		strokeWeight: 3
+	});
+
+	return {
+		bounds: bounds,
+		polyline: polyLine
+	};
 }
+
+var successes = 0;
 
 function resolvePoints(locations) {
 	var promises = [];
@@ -126,10 +126,16 @@ function defineRoute(points) {
 	},
 	function(result, status) {
 		if(status == google.maps.DirectionsStatus.OK) {
-			directionsDisplay.setDirections(result);
+			var route = result.routes[0];
+			var polylineResult = routeToPolyLine(route);
+			var polyline = polylineResult.polyline;
 
-			// Wait for it... then set the map center
-			//map.setCenter(new google.maps.LatLng(53.0779, -67.98867));
+			map.fitBounds(polylineResult.bounds);
+			polyline.setMap(map);
+
+			makePointer(polyline, 10, 'Ten');
+			makePointer(polyline, 100, 'One Hundred');
+			makePointer(polyline, 1000, 'One Thousand');
 		}
 	});
 }
@@ -147,6 +153,50 @@ function degradeList(list, targetSize) {
 	return out;
 }
 
-function makePointer(route, distance) {
+function clone(o) {
+	// Strangely this is actually one of the fastest ways to clone in JS..
+	return JSON.parse(JSON.stringify(o));
+}
 
+function makePointer(polyline, distance, teamName) {
+	var ll = polyline.GetPointAtDistance(distance * 1000);
+	var marker = new google.maps.Marker({
+		position: ll,
+		map: map,
+		title: teamName + "(" + distance + "km)"
+	});
+	activeMarkers.push(makePointer);
+}
+
+function plotTerryFoxRun() {
+	// TODO: store latlongs
+	locations = [
+	'St Johns Newfoundland',
+	'Gander Newfoundland',
+	'South Brook Junction Newfoundland',
+	'Port-Aux-Basques Newfoundland',
+	'Sheet Harbour, Nova Scotia',
+	'Dartmouth, Nova Scotia',
+	'Charlottetown, PEI',
+	'Moncton, NB',
+	'Bristol, NB',
+	'Perth-Andover, NB',
+	'Highway 185, QC',
+	'Highway 20, QC',
+	'Quebec City, QC',
+	'Hawkesbury, ON',
+	'Ottawa, ON',
+	'Millwood, ON',
+	'Pickering, ON',
+	'Scarborough Civic Centre, ON',
+	'Toronto, ON',
+	'Hamilton, ON',
+	'Gravenhurst, ON',
+	'Sudbury, ON',
+	'Sault Ste. Marie, ON',
+	'Wawa, ON',
+	'Terrace Bay, ON',
+	'Thunder Bay, ON'];
+
+	resolvePoints(locations);
 }
