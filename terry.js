@@ -26,6 +26,13 @@ function init() {
 	plotTerryFoxRun();
 }
 
+function clearMarkers() {
+	for(var i = 0; i < activeMarkers.length; ++i) {
+		activeMarkers[i].setMap(null);
+	}
+	activeMarkers = [];
+}
+
 function initializeForm(values) {
 	var fields = 16;
 	for(var i = 0; i < fields; ++i) {
@@ -69,8 +76,6 @@ function routeToPolyLine(route) {
 		polyline: polyLine
 	};
 }
-
-var successes = 0;
 
 function defineRoute(points) {
 	var rendererOptions = { map: map };
