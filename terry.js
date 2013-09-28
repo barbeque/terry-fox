@@ -179,7 +179,15 @@ function makePointer(polyline, distance, teamName, colour) {
 	var marker = new google.maps.Marker({
 		position: ll,
 		map: map,
-		title: content
+		title: content,
+		icon: {
+			path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+			fillColor: colour || "red",
+			strokeColor: 'black',
+			strokeWeight: 1,
+			fillOpacity: 1.0,
+			scale: 6
+		}
 	});
 	activeMarkers.push(marker);
 
