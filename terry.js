@@ -173,80 +173,9 @@ function defineRoute(points) {
 	oceanRoute.setMap(map);
 
 	var bounds = buildBounds(points);
+	var winnipeg = new google.maps.LatLng(49, -97);
+	bounds.extend(winnipeg);
 	map.fitBounds(bounds);
-
-	/*var rendererOptions = { map: map };
-	var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
-
-	var islandDirector = new google.maps.DirectionsService();
-	var baseOptions = {
-		avoidHighways: false,
-		avoidTolls: false,
-		durationInTraffic: false,
-		optimizeWaypoints: false,
-		provideRouteAlternatives: false,
-		travelMode: google.maps.TravelMode.DRIVING,
-		unitSystem: google.maps.UnitSystem.METRIC
-	};
-
-	// Do the island route first
-	var islandOptions = $.extend(baseOptions, {
-		origin: points[0], 
-		destination: points[3], // Port-Aux-Basques NFLD
-		waypoints: makeWaypointArray(points.slice(1,3))
-	});
-	var director = new google.maps.DirectionsService();
-	director.route(islandOptions,
-		function(result, status) {
-			if(status == google.maps.DirectionsStatus.OK) {
-				var resultRoute = result.routes[0];
-				var polylineResult = routeToPolyLine(resultRoute);
-				islandRoute = polylineResult.polyline;
-				var bounds = polylineResult.bounds;
-				islandRoute.setMap(map);
-
-				// Now that we have the island, do the rest of the points
-				var mainlandOptions = $.extend(baseOptions, {
-					origin: points[4],
-					destination: points[points.length - 1],
-					waypoints: makeWaypointArray(degradeList(points.slice(4), 8)) // it will knock off the first one by design
-				});
-				var mainlandDirector = new google.maps.DirectionsService();
-				mainlandDirector.route(mainlandOptions,
-					function(mainlandResult, mainlandStatus) {
-						if(mainlandStatus == google.maps.DirectionsStatus.OK) {
-							var mainlandResultRoute = mainlandResult.routes[0];
-							var polylineMainlandResult = routeToPolyLine(mainlandResultRoute);
-							mainlandRoute = polylineMainlandResult.polyline;
-							// Extend bounds from previous step by these bounds
-							bounds.union(polylineMainlandResult.bounds);
-							mainlandRoute.setMap(map);
-
-							map.fitBounds(bounds);
-						}
-					}
-				);
-			}
-		}
-	);*/
-}
-
-function degradeList(list, targetSize) {
-	// Take off the first and last
-	var sliced = list.slice(1, list.length - 2);
-	var out = [];
-	var n = Math.ceil(sliced / targetSize);
-	for(var i = 0; i < sliced.length; ++i) {
-		if(i % n == 0) {
-			out.push(sliced[i]);
-		}
-	}
-	return out;
-}
-
-function clone(o) {
-	// Strangely this is actually one of the fastest ways to clone in JS..
-	return JSON.parse(JSON.stringify(o));
 }
 
 function makePointer(polyline, distance, teamName, colour) {
