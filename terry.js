@@ -60,7 +60,7 @@ function addMarkersFromMenu() {
 		if(text.length > 0) {
 			if(isNaN(text)) {
 				// I dunno, is there some better way?
-				makePointer(islandRoute, 0, 'Team ' + (i + 1) + " - INVALID DISTANCE PROVIDED", '#ff0000');
+				makeMarker(islandRoute, 0, 'Team ' + (i + 1) + " - INVALID DISTANCE PROVIDED", '#ff0000');
 			}
 			else {
 				var distanceInKm = parseInt(text);
@@ -79,7 +79,7 @@ function addMarkersFromMenu() {
 					c = palette[i];
 				}
 
-				makePointer(route, relativeDistance, 'Team ' + (i + 1), c);
+				makeMarker(route, relativeDistance, 'Team ' + (i + 1), c);
 			}
 		}
 	}
@@ -160,7 +160,8 @@ function defineRoute(points) {
 	map.fitBounds(bounds);
 }
 
-function makePointer(polyline, distance, teamName, colour) {
+function makeMarker(polyline, distance, teamName, colour) {
+	// Create markers and their content
 	var content = teamName + " (" + distance + "km)";
 	var ll = polyline.GetPointAtDistance(distance * 1000);
 	var marker = new google.maps.Marker({
@@ -178,6 +179,7 @@ function makePointer(polyline, distance, teamName, colour) {
 	});
 	activeMarkers.push(marker);
 
+	// Hook up the info window (duh)
 	google.maps.event.addListener(marker, 'click', function() {
 		infoWindow.setContent(content);
 		infoWindow.open(map, marker);
