@@ -4,8 +4,8 @@ var infoWindow = {};
 var MAX_FIELDS = 16;
 var terryFoxRoute = {};
 
-// At about 300 km they hit the end of NFLD and switch off.
-var ISLAND_SWITCH_DISTANCE = 300;
+// At about 590 km they hit the end of NFLD and switch off.
+var ISLAND_SWITCH_DISTANCE = 590;
 var islandRoute = {};
 var mainlandRoute = {};
 
@@ -76,7 +76,7 @@ function addMarkersFromMenu() {
 					c = palette[i];
 				}
 
-				makePointer(route, distanceInKm, 'Team ' + (i + 1), c);
+				makePointer(route, relativeDistance, 'Team ' + (i + 1), c);
 			}
 		}
 	}
@@ -167,15 +167,13 @@ function defineRoute(points) {
 				var bounds = polylineResult.bounds;
 				islandRoute.setMap(map);
 
-				map.fitBounds(bounds);
-
 				// Now that we have the island, do the rest of the points
-				/*var mainlandOptions = $.extend(baseOptions, {
-					origin: points[points.length - 1],
-					destination: points[4],
+				var mainlandOptions = $.extend(baseOptions, {
+					origin: points[4],
+					destination: points[points.length - 1],
 					waypoints: makeWaypointArray(degradeList(points.slice(4), 8)) // it will knock off the first one by design
 				});
-				var mainlandDirector = google.maps.DirectionsService();
+				var mainlandDirector = new google.maps.DirectionsService();
 				mainlandDirector.route(mainlandOptions,
 					function(mainlandResult, mainlandStatus) {
 						if(mainlandStatus == google.maps.DirectionsStatus.OK) {
@@ -185,9 +183,11 @@ function defineRoute(points) {
 							// Extend bounds from previous step by these bounds
 							bounds.union(polylineMainlandResult.bounds);
 							mainlandRoute.setMap(map);
+
+							map.fitBounds(bounds);
 						}
 					}
-				);*/
+				);
 			}
 		}
 	);
