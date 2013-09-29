@@ -4,8 +4,8 @@ var infoWindow = {};
 var MAX_FIELDS = 16;
 var terryFoxRoute = {};
 
-// At about 590 km they hit the end of NFLD and switch off.
-var ISLAND_SWITCH_DISTANCE = 590;
+// At about 620 km they hit the end of NFLD and switch off.
+var ISLAND_SWITCH_DISTANCE = 620;
 var islandRoute = {};
 var mainlandRoute = {};
 
@@ -136,8 +136,46 @@ function routeToPolyLine(route) {
 	};
 }
 
+function buildBounds(points) {
+	var x = new google.maps.LatLngBounds();
+	for(var i = 0; i < points.length; ++i) {
+		x.extend(points[i]);
+	}
+	return x;
+}
+
 function defineRoute(points) {
-	var rendererOptions = { map: map };
+	// Forget directions, let's do poly lines
+	islandRoute = new google.maps.Polyline({
+		path: points.slice(0,4), // all of NFLD
+		strokeColor: '#ff0000',
+		strokeOpacity: 1.0,
+		strokeWeight: 2
+	});
+	islandRoute.setMap(map);
+
+	mainlandRoute = new google.maps.Polyline({
+		path: points.slice(4),
+		strokeColor: '#ff0000',
+		strokeOpacity: 1.0,
+		strokeWeight: 2
+	});
+	mainlandRoute.setMap(map);
+
+	var oceanRoute = new google.maps.Polyline({
+		path: [
+			points[3], points[4]
+		],
+		strokeColor: '#0000ff',
+		strokeOpacity: 0.5,
+		strokeWeight: 1
+	});
+	oceanRoute.setMap(map);
+
+	var bounds = buildBounds(points);
+	map.fitBounds(bounds);
+
+	/*var rendererOptions = { map: map };
 	var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
 
 	var islandDirector = new google.maps.DirectionsService();
@@ -190,7 +228,7 @@ function defineRoute(points) {
 				);
 			}
 		}
-	);
+	);*/
 }
 
 function degradeList(list, targetSize) {
@@ -279,15 +317,13 @@ function plotTerryFoxRun() {
 	'Terrace Bay, ON',
 	'Thunder Bay, ON'];*/
 
-	//resolvePoints(locations);
-
 	var pp = [
 		new google.maps.LatLng(47.560541, -52.712831),
 		new google.maps.LatLng(48.954408, -54.610349),
 		new google.maps.LatLng(49.364459, -56.095238),
 		new google.maps.LatLng(47.572115, -59.136429),
 		new google.maps.LatLng(44.6652059, -63.5677427),
-		new google.maps.LatLng(44.927851, -62.544239),
+		//new google.maps.LatLng(44.927851, -62.544239), // Dartmouth causes a gross looking cycle, so drop it
 		new google.maps.LatLng(44.665206, -63.567743),
 		new google.maps.LatLng(46.238240, -63.131070),
 		new google.maps.LatLng(46.087817, -64.778231),
