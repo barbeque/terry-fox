@@ -105,6 +105,37 @@ function initializeForm(values) {
 	}
 }
 
+function routeToPolyLine(route) {
+	var legs = route.legs;
+	var steps = legs[0].steps;
+	var points = [];
+	var bounds = new google.maps.LatLngBounds;
+
+	for(var i = 0; i < steps.length; ++i) {
+		var point = steps[i].start_location;
+		bounds = bounds.extend(point);
+		points.push(point);
+		// Clean it up real nice.
+		if(i == steps.length - 1) {
+			point = steps[i].end_location;
+			bounds = bounds.extend(point);
+			points.push(point);
+		}
+	}
+
+	var polyLine = new google.maps.Polyline({
+		path: points,
+		strokeColor: '#ff0000',
+		strokeOpacity: 1.0,
+		strokeWeight: 3
+	});
+
+	return {
+		bounds: bounds,
+		polyline: polyLine
+	};
+}
+
 function buildBounds(points) {
 	var x = new google.maps.LatLngBounds();
 	for(var i = 0; i < points.length; ++i) {
@@ -171,6 +202,18 @@ function makePointer(polyline, distance, teamName, colour) {
 	});
 
 	return marker;
+}
+
+function makeWaypointArray(points) {
+	// Google is dumb
+	var out = [];
+	for(var i = 0; i < points.length; ++i) {
+		out.push({
+			location: points[i],
+			stopover: false
+		});
+	}
+	return out;
 }
 
 function plotTerryFoxRun() {
