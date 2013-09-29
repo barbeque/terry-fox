@@ -153,9 +153,9 @@ function defineRoute(points) {
 
 	// Do the island route first
 	var islandOptions = $.extend(baseOptions, {
-		origin: points[3], // Port-Aux-Basques NFLD
-		destination: points[0],
-		waypoints: [] //points.slice(1,3)
+		origin: points[0], 
+		destination: points[3], // Port-Aux-Basques NFLD
+		waypoints: makeWaypointArray(points.slice(1,3))
 	});
 	var director = new google.maps.DirectionsService();
 	director.route(islandOptions,
@@ -173,7 +173,7 @@ function defineRoute(points) {
 				/*var mainlandOptions = $.extend(baseOptions, {
 					origin: points[points.length - 1],
 					destination: points[4],
-					waypoints: degradeList(points.slice(4), 8) // it will knock off the first one by design
+					waypoints: makeWaypointArray(degradeList(points.slice(4), 8)) // it will knock off the first one by design
 				});
 				var mainlandDirector = google.maps.DirectionsService();
 				mainlandDirector.route(mainlandOptions,
@@ -235,6 +235,18 @@ function makePointer(polyline, distance, teamName, colour) {
 	});
 
 	return marker;
+}
+
+function makeWaypointArray(points) {
+	// Google is dumb
+	var out = [];
+	for(var i = 0; i < points.length; ++i) {
+		out.push({
+			location: points[i],
+			stopover: false
+		});
+	}
+	return out;
 }
 
 function plotTerryFoxRun() {
