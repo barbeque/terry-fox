@@ -34,14 +34,16 @@ function init() {
 	});
 	
 	initializeForm(distances);
-	if(distances && distances.length > 0) {
-		addMarkersFromMenu();
-	}
 
 	// go for it
 	plotTerryFoxRun();
 
 	$("button").removeAttr('disabled');
+
+	if(distances && distances.length > 0) {
+		// They asked for it...
+		addMarkersFromMenu();
+	}
 }
 
 function addMarkersFromMenu() {
