@@ -5,11 +5,11 @@ var MAX_FIELDS = 16;
 var terryFoxRoute = {};
 
 // At about 620 km they hit the end of NFLD and switch off.
+// HACK: Is there a way to get the total polyline length?
 var ISLAND_SWITCH_DISTANCE = 620;
 var islandRoute = {};
 var mainlandRoute = {};
 
-// TODO Use this palette when you figure out how to use custom icons.
 var palette = [
 	'#5260e0', '#8A0447', '#F92664', '#EBCF47',	'#47E0EB',
 	'#346CD9', '#2DE134', '#E87626', '#529EE0', '#2BEEB9',
@@ -18,7 +18,7 @@ var palette = [
 ];
 
 function init() {
-	$("button").attr('disabled'	, 'disabled');
+	$("button").attr('disabled', 'disabled');
 	var mapOptions = {
 		zoom: 8,
 		center: new google.maps.LatLng(51.0453246, -114.05810120000001),
@@ -187,7 +187,6 @@ function makePointer(polyline, distance, teamName, colour) {
 }
 
 function plotTerryFoxRun() {
-	// TODO: store latlongs
 	/*locations = [
 	'St Johns Newfoundland',
 	'Gander Newfoundland',
