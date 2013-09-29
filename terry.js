@@ -134,10 +134,20 @@ function defineRoute(points) {
 	});
 	mainlandRoute.setMap(map);
 
+	// Make a cool dashed line...
 	var oceanRoute = new google.maps.Polyline({
 		path: [
 			points[3], points[4]
 		],
+		icons: [{
+			icon: {
+				path: 'M 0,-1 0,1',
+				strokeOpacity: 1,
+				scale: 4
+			},
+			offset: '0',
+			repeat: '20px'
+		}],
 		strokeColor: '#0000ff',
 		strokeOpacity: 0.5,
 		strokeWeight: 1
