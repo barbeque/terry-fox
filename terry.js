@@ -186,18 +186,6 @@ function makePointer(polyline, distance, teamName, colour) {
 	return marker;
 }
 
-function makeWaypointArray(points) {
-	// Google is dumb
-	var out = [];
-	for(var i = 0; i < points.length; ++i) {
-		out.push({
-			location: points[i],
-			stopover: false
-		});
-	}
-	return out;
-}
-
 function plotTerryFoxRun() {
 	// TODO: store latlongs
 	/*locations = [
