@@ -4,6 +4,11 @@ var infoWindow = {};
 var MAX_FIELDS = 16;
 var terryFoxRoute = {};
 
+// At about 300 km they hit the end of NFLD and switch off.
+var ISLAND_SWITCH_DISTANCE = 300;
+var islandRoute = {};
+var mainlandRoute = {};
+
 // TODO Use this palette when you figure out how to use custom icons.
 var palette = [
 	'#5260e0', '#8A0447', '#F92664', '#EBCF47',	'#47E0EB',
@@ -39,7 +44,7 @@ function init() {
 }
 
 function addMarkersFromMenu() {
-	if(!terryFoxRoute) {
+	if(!islandRoute || !mainlandRoute) {
 		return; // Not loaded yet...
 	}
 
@@ -48,13 +53,19 @@ function addMarkersFromMenu() {
 	// Then, iterate all of the inputs and make pointers.
 	for(var i = 0; i < MAX_FIELDS; ++i) {
 		var text = $("input[name=form" + i + "]").val();
+
 		if(text.length > 0) {
 			if(isNaN(text)) {
 				// I dunno, is there some better way?
-				makePointer(terryFoxRoute, 0, 'Team ' + (i + 1) + " - INVALID DISTANCE PROVIDED", '#ff0000');
+				makePointer(islandRoute, 0, 'Team ' + (i + 1) + " - INVALID DISTANCE PROVIDED", '#ff0000');
 			}
 			else {
 				var distanceInKm = parseInt(text);
+
+				// Figure out if they made it off the island or not, and switch routes if so.
+				var isOnMainland = (distanceInKm > ISLAND_SWITCH_DISTANCE);
+				var route = isOnMainland ? mainlandRoute : islandRoute;
+				var relativeDistance = isOnMainland ? (distanceInKm - ISLAND_SWITCH_DISTANCE) : distanceInKm;
 
 				var c;
 				if(i < 0 || i > palette.length) {
@@ -65,7 +76,7 @@ function addMarkersFromMenu() {
 					c = palette[i];
 				}
 
-				makePointer(terryFoxRoute, distanceInKm, 'Team ' + (i + 1), c);
+				makePointer(route, distanceInKm, 'Team ' + (i + 1), c);
 			}
 		}
 	}
@@ -129,30 +140,57 @@ function defineRoute(points) {
 	var rendererOptions = { map: map };
 	var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
 
-	var director = new google.maps.DirectionsService();
-	director.route({
+	var islandDirector = new google.maps.DirectionsService();
+	var baseOptions = {
 		avoidHighways: false,
 		avoidTolls: false,
-		origin: points[points.length - 1],//points[0],
-		destination: points[0],//points[points.length - 1],
 		durationInTraffic: false,
 		optimizeWaypoints: false,
 		provideRouteAlternatives: false,
 		travelMode: google.maps.TravelMode.DRIVING,
-		unitSystem: google.maps.UnitSystem.METRIC,
-		waypoints: degradeList(points, 8) // google sucks
-	},
-	function(result, status) {
-		if(status == google.maps.DirectionsStatus.OK) {
-			var route = result.routes[0];
-			var polylineResult = routeToPolyLine(route);
-			var polyline = polylineResult.polyline;
-			terryFoxRoute = polyline;
+		unitSystem: google.maps.UnitSystem.METRIC
+	};
 
-			map.fitBounds(polylineResult.bounds);
-			polyline.setMap(map);
-		}
+	// Do the island route first
+	var islandOptions = $.extend(baseOptions, {
+		origin: points[3], // Port-Aux-Basques NFLD
+		destination: points[0],
+		waypoints: [] //points.slice(1,3)
 	});
+	var director = new google.maps.DirectionsService();
+	director.route(islandOptions,
+		function(result, status) {
+			if(status == google.maps.DirectionsStatus.OK) {
+				var resultRoute = result.routes[0];
+				var polylineResult = routeToPolyLine(resultRoute);
+				islandRoute = polylineResult.polyline;
+				var bounds = polylineResult.bounds;
+				islandRoute.setMap(map);
+
+				map.fitBounds(bounds);
+
+				// Now that we have the island, do the rest of the points
+				/*var mainlandOptions = $.extend(baseOptions, {
+					origin: points[points.length - 1],
+					destination: points[4],
+					waypoints: degradeList(points.slice(4), 8) // it will knock off the first one by design
+				});
+				var mainlandDirector = google.maps.DirectionsService();
+				mainlandDirector.route(mainlandOptions,
+					function(mainlandResult, mainlandStatus) {
+						if(mainlandStatus == google.maps.DirectionsStatus.OK) {
+							var mainlandResultRoute = mainlandResult.routes[0];
+							var polylineMainlandResult = routeToPolyLine(mainlandResultRoute);
+							mainlandRoute = polylineMainlandResult.polyline;
+							// Extend bounds from previous step by these bounds
+							bounds.union(polylineMainlandResult.bounds);
+							mainlandRoute.setMap(map);
+						}
+					}
+				);*/
+			}
+		}
+	);
 }
 
 function degradeList(list, targetSize) {
@@ -232,32 +270,33 @@ function plotTerryFoxRun() {
 	//resolvePoints(locations);
 
 	var pp = [
-		new google.maps.LatLng(43.25002080000001, -79.86609140000002),
-		new google.maps.LatLng(43.653226, -79.38318429999998),
-		new google.maps.LatLng(43.7729244, -79.25756469999999),
-		new google.maps.LatLng(43.83841169999999, -79.08675790000001),
+		new google.maps.LatLng(47.560541, -52.712831),
+		new google.maps.LatLng(48.954408, -54.610349),
+		new google.maps.LatLng(49.364459, -56.095238),
+		new google.maps.LatLng(47.572115, -59.136429),
 		new google.maps.LatLng(44.6652059, -63.5677427),
-		new google.maps.LatLng(44.919643, -79.37418339999999),
-		new google.maps.LatLng(44.9278509, -62.544239000000005),
-		new google.maps.LatLng(45.4215296, -75.69719309999999),
-		new google.maps.LatLng(45.6071264, -74.60418900000002),
-		new google.maps.LatLng(46.0878165, -64.77823130000002),
-		new google.maps.LatLng(46.23824, -63.1310704),
-		new google.maps.LatLng(46.471094, -67.5806829),
-		new google.maps.LatLng(46.48999999999999, -81.00999999999999),
-		new google.maps.LatLng(46.52185799999999, -84.34608960000003),
-		new google.maps.LatLng(46.7458117, -67.69777210000001),
-		new google.maps.LatLng(46.8032826, -71.242796),
-		new google.maps.LatLng(47.5605413, -52.71283149999999),
-		new google.maps.LatLng(47.5721149, -59.13642900000002),
-		new google.maps.LatLng(47.6670443, -68.9740324),
+		new google.maps.LatLng(44.927851, -62.544239),
+		new google.maps.LatLng(44.665206, -63.567743),
+		new google.maps.LatLng(46.238240, -63.131070),
+		new google.maps.LatLng(46.087817, -64.778231),
+		new google.maps.LatLng(46.471094, -67.580683),
+		new google.maps.LatLng(46.745812, -67.697772),
+		new google.maps.LatLng(47.667044, -68.974032),
+		new google.maps.LatLng(48.487694, -68.452152),
+		new google.maps.LatLng(46.803283, -71.242796),
+		new google.maps.LatLng(45.607126, -74.604189),
+		new google.maps.LatLng(45.421530, -75.697193),
 		new google.maps.LatLng(47.683333, -84.5),
+		new google.maps.LatLng(43.838412, -79.086758),
+		new google.maps.LatLng(43.772924, -79.257565),
+		new google.maps.LatLng(43.653226, -79.383184),
+		new google.maps.LatLng(43.250021, -79.866091),
+		new google.maps.LatLng(44.919643, -79.374183),
+		new google.maps.LatLng(46.49, -81.01),
+		new google.maps.LatLng(46.521858, -84.346090),
 		new google.maps.LatLng(47.992392, -84.771007),
-		new google.maps.LatLng(48.3808951, -89.24768230000001),
-		new google.maps.LatLng(48.4876939, -68.4521517),
-		new google.maps.LatLng(48.784141, -87.09624500000001),
-		new google.maps.LatLng(48.954408, -54.6103488),
-		new google.maps.LatLng(49.3644591, -56.09523760000002) 
+		new google.maps.LatLng(48.784141, -87.096245),
+		new google.maps.LatLng(48.380895, -89.247682)
 	];
 	defineRoute(pp);
 }
