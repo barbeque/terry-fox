@@ -34,8 +34,9 @@ function init() {
 	});
 	
 	initializeForm(distances);
-	// TODO: if they actually provided distances, remember to run the button
-	// method after the route plot is done.
+	if(distances && distances.length > 0) {
+		addMarkersFromMenu();
+	}
 
 	// go for it
 	plotTerryFoxRun();
