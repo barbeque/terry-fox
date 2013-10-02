@@ -233,7 +233,7 @@ function plotTerryFoxRun() {
 		new google.maps.LatLng(48.487694, -68.452152),
 		new google.maps.LatLng(46.803283, -71.242796),
 		new google.maps.LatLng(45.607126, -74.604189),
-		new google.maps.LatLng(45.421530, -75.697193),
+		//new google.maps.LatLng(45.421530, -75.697193), // Millwood also causes a cycle
 		new google.maps.LatLng(47.683333, -84.5),
 		new google.maps.LatLng(43.838412, -79.086758),
 		new google.maps.LatLng(43.772924, -79.257565),
